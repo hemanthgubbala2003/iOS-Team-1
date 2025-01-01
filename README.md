@@ -1,2 +1,2 @@
 Contributors:-
-Rithik, Nitish, Jyothika, Hemanth
+Rithik, Nithish, Jyothika, Hemanth
