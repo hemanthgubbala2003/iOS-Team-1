@@ -1,2 +1,6 @@
-Contributors:-
-Rithik, Nithish, Jyothika, Hemanth
+## Contributors
+
+- **Rithik**  
+- **Nithish**  
+- **Jyothika**  
+- **Hemanth**  
