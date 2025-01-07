@@ -8,20 +8,15 @@
 import UIKit
 
 class PolicyAddOnViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource {
-
-    
     
     @IBOutlet var PolicNo: UITextField!
     @IBOutlet var AddNo: UITextField!
     @IBOutlet var Amt: UITextField!
     
-    
-    
     @IBOutlet var Save: UIButton!
     @IBOutlet var Update: UIButton!
     @IBOutlet var Delete: UIButton!
     @IBOutlet var GET: UIButton!
-    
     
     var pv1: UIPickerView!
     var PolicyNo: [String] = []
@@ -29,52 +24,47 @@ class PolicyAddOnViewController: UIViewController, UIPickerViewDelegate, UIPicke
     var pv2: UIPickerView!
     var AddID: [String] = []
     
-    
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
         
+        // Toolbar for picker views
         let toolbar = UIToolbar()
         toolbar.sizeToFit()
         let doneButton = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(dismissFunc))
         toolbar.setItems([doneButton], animated: false)
         toolbar.isUserInteractionEnabled = true
         
-    
-        // Set up the UIPickerView for ClaimStatus
+        // Set up the UIPickerView for PolicyNo
         pv1 = UIPickerView()
         pv1.delegate = self
         pv1.dataSource = self
         PolicNo.inputView = pv1
         PolicNo.inputAccessoryView = toolbar
         
-       
-        
+        // Set up the UIPickerView for AddID
         pv2 = UIPickerView()
         pv2.delegate = self
         pv2.dataSource = self
         AddNo.inputView = pv2
         AddNo.inputAccessoryView = toolbar
         
+        // Fetch Policy IDs initially
         fetchPolicyIDs()
         
-        fetchADDONIDs()
     }
     
-
     
     @IBAction func ClickSave(_ sender: UIButton) {
-        guard let policyNo = PolicNo.text?.trimmingCharacters(in: .whitespacesAndNewlines), !policyNo.isEmpty,
-              let addNo = AddNo.text?.trimmingCharacters(in: .whitespacesAndNewlines), !addNo.isEmpty,
-              let amount = Amt.text?.trimmingCharacters(in: .whitespacesAndNewlines), !amount.isEmpty else {
+        
+        guard let policyNo = PolicNo.text, !policyNo.isEmpty,
+              let addNo = AddNo.text, !addNo.isEmpty,
+              let amount = Amt.text, !amount.isEmpty else {
             showAlert(title: "Error", message: "All fields must be filled.")
             return
         }
 
         // Correct URL without the bearer token in the path
-        guard let webserviceURL = URL(string: "\(Constants.policyAPI)/api/PolicyAddOn") else {
+        guard let webserviceURL = URL(string: "\(Constants.policyAPI)/api/PolicyAddOn/\(Constants.bearerToken)") else {
             showAlert(title: "Error", message: "Invalid URL")
             return
         }
@@ -87,8 +77,9 @@ class PolicyAddOnViewController: UIViewController, UIPickerViewDelegate, UIPicke
        
         let policyAddOnDetails: [String: Any] = [
             "AddonID": addNo,
-            "Amount": Int(amount) ?? 0,
-            "PolicyNo": policyNo
+            "PolicyNo": policyNo,
+            "Amount": Int(amount) ?? 0
+            
         ]
 
         // Convert payload to JSON
@@ -148,146 +139,6 @@ class PolicyAddOnViewController: UIViewController, UIPickerViewDelegate, UIPicke
         task.resume()
     }
 
-    
-    
-    @IBAction func ClickUpdate(_ sender: UIButton) {
-        guard let policyNo = PolicNo.text?.trimmingCharacters(in: .whitespacesAndNewlines), !policyNo.isEmpty,
-              let addNo = AddNo.text?.trimmingCharacters(in: .whitespacesAndNewlines), !addNo.isEmpty,
-              let amount = Amt.text?.trimmingCharacters(in: .whitespacesAndNewlines), !amount.isEmpty else {
-            showAlert(title: "Error", message: "All fields must be filled.")
-            return
-        }
-        
-        guard let webserviceURL = URL(string: "\(Constants.policyAPI)/api/PolicyAddOn/\(policyNo)/\(addNo)") else {
-            showAlert(title: "Error", message: "Invalid URL")
-            return
-        }
-        
-        var request = URLRequest(url: webserviceURL)
-        request.httpMethod = "PUT"
-        request.setValue("Bearer \(Constants.bearerToken)", forHTTPHeaderField: "Authorization")
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        // Construct the payload
-        let policyAddOnDetails: [String: Any] = [
-            "PolicyNo": policyNo,   // Corrected field name
-            "AddonID": addNo,       // Corrected field name
-            "Amount": Int(amount) ?? 0 // Assuming the amount is numeric
-        ]
-        
-        do {
-            let jsonData = try JSONSerialization.data(withJSONObject: policyAddOnDetails, options: [])
-            if let jsonString = String(data: jsonData, encoding: .utf8) {
-                print("Request Body: \(jsonString)")
-            }
-            request.httpBody = jsonData
-        } catch {
-            showAlert(title: "Error", message: "Failed to serialize JSON: \(error.localizedDescription)")
-            return
-        }
-        
-        let session = URLSession.shared
-        let task = session.dataTask(with: request) { data, response, error in
-            if let error = error {
-                DispatchQueue.main.async {
-                    self.showAlert(title: "Error", message: "Request failed: \(error.localizedDescription)")
-                }
-                return
-            }
-            
-            if let httpResponse = response as? HTTPURLResponse {
-                print("HTTP Status Code: \(httpResponse.statusCode)")
-                if !(200...299).contains(httpResponse.statusCode) {
-                    if let data = data, let errorMessage = String(data: data, encoding: .utf8) {
-                        DispatchQueue.main.async {
-                            self.showAlert(title: "Error", message: "Server Error (\(httpResponse.statusCode)): \(errorMessage)")
-                        }
-                        print("Server Error: \(errorMessage)")
-                    }
-                    return
-                }
-            }
-            
-            if let data = data {
-                do {
-                    if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
-                        DispatchQueue.main.async {
-                            self.showAlert(title: "Success", message: "Update successful: \(jsonResponse)")
-                        }
-                        print("Response from server: \(jsonResponse)")
-                    } else {
-                        if let responseString = String(data: data, encoding: .utf8) {
-                            DispatchQueue.main.async {
-                                self.showAlert(title: "Error", message: "Unexpected response format. Raw response: \(responseString)")
-                            }
-                            print("Unexpected response format. Raw response: \(responseString)")
-                        }
-                    }
-                } catch {
-                    if let responseString = String(data: data, encoding: .utf8) {
-                        DispatchQueue.main.async {
-                            self.showAlert(title: "Error", message: "Failed to parse JSON. Raw response: \(responseString)")
-                        }
-                        print("Failed to parse JSON. Raw response: \(responseString)")
-                    }
-                }
-            }
-        }
-        task.resume()
-    }
-
-
-    
-    
-    @IBAction func ClickDelete(_ sender: UIButton) {
-        
-        guard let policyNo = PolicNo.text?.trimmingCharacters(in: .whitespacesAndNewlines), !policyNo.isEmpty,
-              let addNo = AddNo.text?.trimmingCharacters(in: .whitespacesAndNewlines), !addNo.isEmpty else {
-            showAlert(title: "Error", message: "Policy No and AddNo must be provided.")
-            return
-        }
-
-        
-        guard let webserviceURL = URL(string: "\(Constants.policyAPI)/api/PolicyAddOn/\(policyNo)/\(addNo)") else {
-            showAlert(title: "Error", message: "Invalid URL")
-            return
-        }
-
-     
-        var request = URLRequest(url: webserviceURL)
-        request.httpMethod = "DELETE"
-        request.setValue("Bearer \(Constants.bearerToken)", forHTTPHeaderField: "Authorization")
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
-        // Execute the request
-        let session = URLSession.shared
-        let task = session.dataTask(with: request) { data, response, error in
-            if let error = error {
-                DispatchQueue.main.async {
-                    self.showAlert(title: "Error", message: "Request failed: \(error.localizedDescription)")
-                }
-                print("Request failed: \(error.localizedDescription)")
-                return
-            }
-
-            if let httpResponse = response as? HTTPURLResponse {
-                print("HTTP Status Code: \(httpResponse.statusCode)")
-                if (200...299).contains(httpResponse.statusCode) {
-                    DispatchQueue.main.async {
-                        self.showAlert(title: "Success", message: "Policy deleted successfully.")
-                    }
-                } else {
-                    let errorMessage = data.flatMap { String(data: $0, encoding: .utf8) } ?? "Unknown error"
-                    DispatchQueue.main.async {
-                        self.showAlert(title: "Error", message: "Failed to delete policy. Status Code: \(httpResponse.statusCode). Error: \(errorMessage)")
-                    }
-                    print("Failed to delete policy. Status Code: \(httpResponse.statusCode). Error: \(errorMessage)")
-                }
-            }
-        }
-        task.resume()
-    }
-    
     
     
     @IBAction func ClickGet(_ sender: UIButton) {
@@ -378,180 +229,281 @@ class PolicyAddOnViewController: UIViewController, UIPickerViewDelegate, UIPicke
         task.resume()
     }
 
-
     
-    func fetchPolicyIDs() {
+    @IBAction func ClickDelete(_ sender: UIButton) {
+        
+        guard let policyNo = PolicNo.text?.trimmingCharacters(in: .whitespacesAndNewlines), !policyNo.isEmpty,
+              let addNo = AddNo.text?.trimmingCharacters(in: .whitespacesAndNewlines), !addNo.isEmpty else {
+            showAlert(title: "Error", message: "Policy No and AddNo must be provided.")
+            return
+        }
 
         
-        let url = URL(string: "\(Constants.policyAPI)/api/Policy")!
+        guard let webserviceURL = URL(string: "\(Constants.policyAPI)/api/PolicyAddOn/\(policyNo)/\(addNo)") else {
+            showAlert(title: "Error", message: "Invalid URL")
+            return
+        }
 
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-        request.setValue("Bearer \(Constants.bearerToken)", forHTTPHeaderField: "Authorization") // Pass token in header
+     
+        var request = URLRequest(url: webserviceURL)
+        request.httpMethod = "DELETE"
+        request.setValue("Bearer \(Constants.bearerToken)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        
-        self.PolicyNo = []
 
-        // Perform the API request
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+        // Execute the request
+        let session = URLSession.shared
+        let task = session.dataTask(with: request) { data, response, error in
             if let error = error {
-                print("Error: \(error.localizedDescription)")
-                return
-            }
-            
-            guard let httpResponse = response as? HTTPURLResponse else {
-                print("Failed to get HTTP response.")
-                return
-            }
-            
-            print("HTTP Status Code: \(httpResponse.statusCode)")
-            
-            if !(200...299).contains(httpResponse.statusCode) {
-                print("Server error with status code: \(httpResponse.statusCode)")
-                if let data = data {
-                    let responseString = String(data: data, encoding: .utf8) ?? "Unable to decode response data as String"
-                    print("Response Data String: \(responseString)")
+                DispatchQueue.main.async {
+                    self.showAlert(title: "Error", message: "Request failed: \(error.localizedDescription)")
                 }
+                print("Request failed: \(error.localizedDescription)")
                 return
             }
-            
-            if let data = data {
-                let responseString = String(data: data, encoding: .utf8) ?? "Unable to decode response data as String"
-                print("Response Data String: \(responseString)")
-                
-                do {
-                    if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [[String: Any]] {
-                        print("JSON Response: \(jsonResponse)")
-                        
-                        for policy in jsonResponse {
-                            if let policyNo = policy["policyNo"] as? String {
-                                let trimmedPolicyNo = policyNo.trimmingCharacters(in: .whitespaces)
-                                print("Policy No: \(trimmedPolicyNo)")
-                                self.PolicyNo.append(trimmedPolicyNo)
-                            } else {
-                                print("policyNo not found for policy: \(policy)")
-                            }
-                        }
-                    } else {
-                        print("Unexpected JSON structure.")
+
+            if let httpResponse = response as? HTTPURLResponse {
+                print("HTTP Status Code: \(httpResponse.statusCode)")
+                if (200...299).contains(httpResponse.statusCode) {
+                    DispatchQueue.main.async {
+                        self.showAlert(title: "Success", message: "Policy deleted successfully.")
                     }
-                } catch {
-                    print("Failed to decode response: \(error.localizedDescription)")
+                } else {
+                    let errorMessage = data.flatMap { String(data: $0, encoding: .utf8) } ?? "Unknown error"
+                    DispatchQueue.main.async {
+                        self.showAlert(title: "Error", message: "Failed to delete policy. Status Code: \(httpResponse.statusCode). Error: \(errorMessage)")
+                    }
+                    print("Failed to delete policy. Status Code: \(httpResponse.statusCode). Error: \(errorMessage)")
                 }
             }
         }
         task.resume()
     }
     
-
     
     
-    func fetchADDONIDs() {
-        
-        
-        
-        // URL for the API
-        guard let url = URL(string: "\(Constants.policyAPI)/api/PolicyAddOn") else {
-            print("Invalid URL.")
+    @IBAction func ClickUpdate(_ sender: UIButton) {
+        guard let policyNo = PolicNo.text?.trimmingCharacters(in: .whitespacesAndNewlines), !policyNo.isEmpty,
+              let addNo = AddNo.text?.trimmingCharacters(in: .whitespacesAndNewlines), !addNo.isEmpty,
+              let amount = Amt.text?.trimmingCharacters(in: .whitespacesAndNewlines), !amount.isEmpty else {
+            showAlert(title: "Error", message: "All fields must be filled.")
             return
         }
+        
+        guard let webserviceURL = URL(string: "\(Constants.policyAPI)/api/PolicyAddOn/\(policyNo)/\(addNo)") else {
+            showAlert(title: "Error", message: "Invalid URL")
+            return
+        }
+        
+        var request = URLRequest(url: webserviceURL)
+        request.httpMethod = "PUT"
+        request.setValue("Bearer \(Constants.bearerToken)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        // Construct the payload
+        let policyAddOnDetails: [String: Any] = [
+            "PolicyNo": policyNo,   // Corrected field name
+            "AddonID": addNo,       // Corrected field name
+            "Amount": Int(amount) ?? 0 // Assuming the amount is numeric
+        ]
+        
+        do {
+            let jsonData = try JSONSerialization.data(withJSONObject: policyAddOnDetails, options: [])
+            if let jsonString = String(data: jsonData, encoding: .utf8) {
+                print("Request Body: \(jsonString)")
+            }
+            request.httpBody = jsonData
+        } catch {
+            showAlert(title: "Error", message: "Failed to serialize JSON: \(error.localizedDescription)")
+            return
+        }
+        
+        let session = URLSession.shared
+        let task = session.dataTask(with: request) { data, response, error in
+            if let error = error {
+                DispatchQueue.main.async {
+                    self.showAlert(title: "Error", message: "Request failed: \(error.localizedDescription)")
+                }
+                return
+            }
+            
+            if let httpResponse = response as? HTTPURLResponse {
+                print("HTTP Status Code: \(httpResponse.statusCode)")
+                if !(200...299).contains(httpResponse.statusCode) {
+                    if let data = data, let errorMessage = String(data: data, encoding: .utf8) {
+                        DispatchQueue.main.async {
+                            self.showAlert(title: "Error", message: "Server Error (\(httpResponse.statusCode)): \(errorMessage)")
+                        }
+                        print("Server Error: \(errorMessage)")
+                    }
+                    return
+                }
+            }
+            
+            if let data = data {
+                do {
+                    if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+                        DispatchQueue.main.async {
+                            self.showAlert(title: "Success", message: "Update successful: \(jsonResponse)")
+                        }
+                        print("Response from server: \(jsonResponse)")
+                    } else {
+                        if let responseString = String(data: data, encoding: .utf8) {
+                            DispatchQueue.main.async {
+                                self.showAlert(title: "Error", message: "Unexpected response format. Raw response: \(responseString)")
+                            }
+                            print("Unexpected response format. Raw response: \(responseString)")
+                        }
+                    }
+                } catch {
+                    if let responseString = String(data: data, encoding: .utf8) {
+                        DispatchQueue.main.async {
+                            self.showAlert(title: "Error", message: "Failed to parse JSON. Raw response: \(responseString)")
+                        }
+                        print("Failed to parse JSON. Raw response: \(responseString)")
+                    }
+                }
+            }
+        }
+        task.resume()
+    }
 
+
+    
+  
+    
+
+
+
+ 
+    
+    func fetchPolicyIDs() {
+        guard let url = URL(string: "\(Constants.policyAPI)/api/Policy") else {
+            print("Invalid URL for fetching Policy IDs.")
+            return
+        }
+        
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("Bearer \(Constants.bearerToken)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
+        PolicyNo = []
         
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            
             if let error = error {
-                print("Error: \(error.localizedDescription)")
+                print("Error fetching policy IDs: \(error.localizedDescription)")
                 return
             }
             
-         
-            guard let httpResponse = response as? HTTPURLResponse else {
-                print("Failed to get HTTP response.")
-                return
-            }
-          
-            if !(200...299).contains(httpResponse.statusCode) {
-                print("Server error with status code: \(httpResponse.statusCode)")
+            guard let data = data else {
+                print("No data received while fetching policy IDs.")
                 return
             }
             
-            
-            if let data = data {
-                do {
+            do {
+                if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [[String: Any]] {
+                    self.PolicyNo = jsonResponse.compactMap { $0["policyNo"] as? String }
+                    print("Fetched PolicyNo array: \(self.PolicyNo)")
                     
-                    if let rawResponse = String(data: data, encoding: .utf8) {
-                        print("Raw API Response: \(rawResponse)")
+                    DispatchQueue.main.async {
+                        self.pv1.reloadAllComponents()
                     }
-                    
-                
-                    if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [[String: Any]] {
-                        var fetchedAddIDs = [String]()
-                        for add in jsonResponse {
-                            if let addonID = add["addonID"] as? String { // Use "addonID" instead of "AddID"
-                                fetchedAddIDs.append(addonID.trimmingCharacters(in: .whitespaces)) // Trim whitespaces
-                            }
-                        }
-                        
-                        
-                        print("Fetched AddOn IDs: \(fetchedAddIDs)")
-                        
-                  
-                        DispatchQueue.main.async {
-                            self.AddID = fetchedAddIDs
-                            self.pv2.reloadAllComponents()
-                        }
-                    } else {
-                        print("Unexpected JSON structure.")
-                    }
-                } catch {
-                    print("Failed to decode response: \(error.localizedDescription)")
+                } else {
+                    print("Invalid response format while fetching policy IDs.")
                 }
+            } catch {
+                print("Error parsing policy IDs: \(error.localizedDescription)")
             }
         }
-        
-   
         task.resume()
     }
     
     
+    
+    func fetchADDONIDs(for policyNo: String) {
+        guard let url = URL(string: "\(Constants.policyAPI)/api/PolicyAddOn/ByPolicy/\(policyNo)") else {
+            print("Invalid URL for fetching Add-On IDs.")
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(Constants.bearerToken)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        AddID = []
+        
+        let task = URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
+            guard let self = self else { return }
+            
+            if let error = error {
+                print("Error fetching Add-On IDs: \(error.localizedDescription)")
+                DispatchQueue.main.async {
+                    self.showAlert(title: "Error", message: "Failed to fetch Add-On IDs: \(error.localizedDescription)")
+                }
+                return
+            }
+            
+            guard let data = data else {
+                print("No data received while fetching Add-On IDs.")
+                DispatchQueue.main.async {
+                    self.showAlert(title: "Error", message: "No data received from server.")
+                }
+                return
+            }
+            
+            do {
+                if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [[String: Any]] {
+                    self.AddID = jsonResponse.compactMap { $0["addonID"] as? String }
+                    print("Fetched AddID array for policy \(policyNo): \(self.AddID)")
+                    
+                    DispatchQueue.main.async {
+                        self.pv2.reloadAllComponents()
+                    }
+                } else {
+                    print("Invalid response format while fetching Add-On IDs.")
+                    DispatchQueue.main.async {
+                        self.showAlert(title: "Error", message: "Invalid response format from server.")
+                    }
+                }
+            } catch {
+                print("Error parsing Add-On IDs: \(error.localizedDescription)")
+                DispatchQueue.main.async {
+                    self.showAlert(title: "Error", message: "Failed to parse response: \(error.localizedDescription)")
+                }
+            }
+        }
+        task.resume()
+    }
+    
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
-        return 1 // Single component in each picker
+        return 1
     }
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        if pickerView == pv1 {
-            return PolicyNo.count
-        } else if pickerView == pv2  {
-            return AddID.count
-        }
-        return 0
+        return pickerView == pv1 ? PolicyNo.count : AddID.count
     }
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        if pickerView == pv1 {
-            return PolicyNo[row]
-        } else if pickerView == pv2 {
-            return AddID[row]
-        }
-        return nil
+        return pickerView == pv1 ? PolicyNo[row] : AddID[row]
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         if pickerView == pv1 {
+            guard row < PolicyNo.count else { return }
             PolicNo.text = PolicyNo[row]
-        } else if pickerView == pv2  {
+            
+            // Fetch Add-On IDs for the selected PolicyNo
+            fetchADDONIDs(for: PolicyNo[row])
+        } else if pickerView == pv2 {
+            guard row < AddID.count else { return }
             AddNo.text = AddID[row]
         }
     }
     
-    
-    
+    @objc func dismissFunc() {
+        view.endEditing(true)
+    }
     
     private func showAlert(title: String, message: String) {
         DispatchQueue.main.async {
@@ -560,11 +512,4 @@ class PolicyAddOnViewController: UIViewController, UIPickerViewDelegate, UIPicke
             self.present(alert, animated: true)
         }
     }
-    
-    
-    
-    @objc func dismissFunc(){
-        view.endEditing(true)
-    }
-
 }

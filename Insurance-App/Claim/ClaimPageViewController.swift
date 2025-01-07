@@ -242,7 +242,7 @@ class ClaimPageViewController: UIViewController, UIPickerViewDelegate, UIPickerV
             return
         }
         
-        guard let webserviceURL = URL(string: "\(Constants.claimAPI)api/Claim/\(Cno)") else {
+        guard let webserviceURL = URL(string: "\(Constants.claimAPI)/api/Claim/\(Cno)") else {
             showAlert(title: "Error", message: "Invalid URL")
             return
         }
@@ -320,7 +320,7 @@ class ClaimPageViewController: UIViewController, UIPickerViewDelegate, UIPickerV
             return
         }
         
-        guard let webserviceURL = URL(string: "\(Constants.claimAPI)api/Claim/\(Cno)") else {
+        guard let webserviceURL = URL(string: "\(Constants.claimAPI)/api/Claim/\(Cno)") else {
             showAlert(title: "Error", message: "Invalid URL")
             return
         }
@@ -366,7 +366,7 @@ class ClaimPageViewController: UIViewController, UIPickerViewDelegate, UIPickerV
             return
         }
 
-        guard let webserviceURL = URL(string: "\(Constants.claimAPI)api/Claim/\(Cno)") else {
+        guard let webserviceURL = URL(string: "\(Constants.claimAPI)/api/Claim/\(Cno)") else {
             showAlert(title: "Error", message: "Invalid URL")
             return
         }

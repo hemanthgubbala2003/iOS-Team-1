@@ -21,7 +21,11 @@ class LoginViewController: UIViewController {
             
             Auth.auth().signIn(withEmail: email, password: password) { authResult, error in
                 if let e = error {
-                    print(e)
+                    print(e.localizedDescription)
+                    let alert = UIAlertController(title: "Login Failed", message: e.localizedDescription, preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                    self.present(alert, animated: true, completion: nil)
+                    
                 } else {
                     // If not for the async bloc it may run on parallel thread causing exception
                     DispatchQueue.main.async {
@@ -36,18 +40,5 @@ class LoginViewController: UIViewController {
             }
         }
     }
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == Constants.loginSegue {
-
-            if let welcomeViewController = segue.destination as? WelcomeViewController {
-                // Pass the data
-                welcomeViewController.email = emailTextfield.text!
-                print("\(self.emailTextfield.text!)")
-                
-            }
-        }
-    }
-
     
 }

@@ -19,37 +19,48 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.hidesBackButton = true
-        Constants.generateToken()
-        if let user = Auth.auth().currentUser {
-            let email = user.email
-            let userID = user.uid
-            print("Logged in user: \(email ?? "No Email"), User ID: \(userID)")
-            Customer.getCustomers(customerEmail: email!) { customer, error in
-                if let error = error {
-                    print("Error: \(error.localizedDescription)")
-                } else if let customer = customer {
-                    print("Customer ID: \(customer.customerID)")
-                    print("Customer Name: \(customer.customerName)")
-                    print("Customer Phone: \(customer.customerPhone)")
-                    print("Customer Email: \(customer.customerEmail)")
-                    print("Customer Address: \(customer.customerAddress)")
-                    self.title = "CID: \(customer.customerID)"
-                    
-                } else {
-                    print("Customer not found")
-                }
-            }
-        } else {
-            print("No user is logged in.")
-        }
-        // Style the menu bar button
-        MenuBar.layer.cornerRadius = MenuBar.frame.height / 2
         
-        // Initialize all menu items
-        InsuranceMenu.forEach { btn in
-            btn.layer.cornerRadius = btn.frame.height / 2
-            btn.isHidden = true
-            btn.alpha = 0
+        DispatchQueue.main.async{
+            //Constants.generateToken()
+        }
+        
+        DispatchQueue.main.async {
+//            Constants.generateToken()
+            if let user = Auth.auth().currentUser {
+                let email = user.email
+                let userID = user.uid
+                print("Logged in user: \(email ?? "No Email"), User ID: \(userID)")
+                Customer.getCustomers(customerEmail: email!) { customer, error in
+                    if let error = error {
+                        print("Error: \(error.localizedDescription)")
+                    } else if let customer = customer {
+                        print("Customer ID: \(customer.customerID)")
+                        print("Customer Name: \(customer.customerName)")
+                        print("Customer Phone: \(customer.customerPhone)")
+                        print("Customer Email: \(customer.customerEmail)")
+                        print("Customer Address: \(customer.customerAddress)")
+                        self.title = "CID: \(customer.customerID)"
+                        
+                    } else {
+                        print("Customer not found")
+                    }
+                }
+            } else {
+                print("No user is logged in.")
+            }
+        }
+        
+        DispatchQueue.main.async {
+            // Style the menu bar button
+            self.MenuBar.layer.cornerRadius = self.MenuBar.frame.height / 2
+            
+            // Initialize all menu items
+            self.InsuranceMenu.forEach { btn in
+                btn.layer.cornerRadius = btn.frame.height / 2
+                btn.isHidden = true
+                btn.alpha = 0
+            }
+
         }
         
         

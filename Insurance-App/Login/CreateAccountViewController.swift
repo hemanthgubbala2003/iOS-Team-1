@@ -30,6 +30,9 @@ class CreateAccountViewController: UIViewController {
                 
                 if let e = error {
                     print(e.localizedDescription)
+                    let alert = UIAlertController(title: "Account Creation Failed", message: e.localizedDescription, preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                    self.present(alert, animated: true, completion: nil)
                 } else{
                     // If not for the async bloc it may run on parallel thread causing exception
                     DispatchQueue.main.async {

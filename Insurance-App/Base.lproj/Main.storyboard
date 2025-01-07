@@ -1290,8 +1290,20 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
                             </textField>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MSq-Yb-zAA">
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xdc-93-xbF">
                                 <rect key="frame" x="20" y="321" width="353" height="35"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="tintColor" systemColor="systemGreenColor"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="filled" title="Get">
+                                    <color key="baseBackgroundColor" systemColor="systemBlueColor"/>
+                                </buttonConfiguration>
+                                <connections>
+                                    <action selector="getDetails" destination="i7v-HL-dMO" eventType="touchUpInside" id="68W-Mq-bZm"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MSq-Yb-zAA">
+                                <rect key="frame" x="20" y="364" width="353" height="35"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="tintColor" systemColor="systemGreenColor"/>
                                 <state key="normal" title="Button"/>
@@ -1303,7 +1315,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Sh3-Kq-pbS">
-                                <rect key="frame" x="20" y="364" width="353" height="35"/>
+                                <rect key="frame" x="20" y="407" width="353" height="35"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="tintColor" systemColor="systemOrangeColor"/>
                                 <state key="normal" title="Button"/>
@@ -1315,7 +1327,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Pu7-0w-VSL">
-                                <rect key="frame" x="20" y="407" width="353" height="35"/>
+                                <rect key="frame" x="20" y="450" width="353" height="35"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="tintColor" systemColor="systemRedColor"/>
                                 <state key="normal" title="Button"/>
@@ -1409,8 +1421,20 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="v29-GR-xdt">
+                                <rect key="frame" x="20" y="452" width="353" height="35"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="tintColor" systemColor="systemGreenColor"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="filled" title="Get">
+                                    <color key="baseBackgroundColor" systemColor="systemBlueColor"/>
+                                </buttonConfiguration>
+                                <connections>
+                                    <action selector="getDetails" destination="ZuN-9c-PjX" eventType="touchUpInside" id="3Kd-pl-Ifr"/>
+                                </connections>
+                            </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Xh4-wl-i7N">
-                                <rect key="frame" x="20" y="463" width="353" height="35"/>
+                                <rect key="frame" x="20" y="495" width="353" height="35"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Create">
@@ -1421,7 +1445,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Z9f-oX-kRS">
-                                <rect key="frame" x="20" y="506" width="353" height="35"/>
+                                <rect key="frame" x="20" y="538" width="353" height="35"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Update">
@@ -1432,7 +1456,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="TTm-46-p4P">
-                                <rect key="frame" x="20" y="549" width="353" height="35"/>
+                                <rect key="frame" x="20" y="581" width="353" height="35"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Delete">
@@ -1535,7 +1559,7 @@
                                 <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RQF-K4-gPz">
-                                <rect key="frame" x="18" y="573" width="353" height="35"/>
+                                <rect key="frame" x="18" y="613" width="353" height="35"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="tintColor" systemColor="systemGreenColor"/>
                                 <state key="normal" title="Button"/>
@@ -1543,11 +1567,11 @@
                                     <color key="baseBackgroundColor" systemColor="systemGreenColor"/>
                                 </buttonConfiguration>
                                 <connections>
-                                    <action selector="postDetails" destination="1jy-hg-cmU" eventType="touchUpInside" id="c2g-WP-RQR"/>
+                                    <action selector="postDetails" destination="1jy-hg-cmU" eventType="touchUpInside" id="XEc-XC-Apy"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cJK-WU-QXg">
-                                <rect key="frame" x="18" y="616" width="353" height="35"/>
+                                <rect key="frame" x="18" y="656" width="353" height="35"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="tintColor" systemColor="systemOrangeColor"/>
                                 <state key="normal" title="Button"/>
@@ -1559,7 +1583,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1yI-6B-N2k">
-                                <rect key="frame" x="18" y="659" width="353" height="35"/>
+                                <rect key="frame" x="18" y="699" width="353" height="35"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="tintColor" systemColor="systemRedColor"/>
                                 <state key="normal" title="Button"/>
@@ -1582,6 +1606,18 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
                             </textField>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CSb-Ge-9H5">
+                                <rect key="frame" x="18" y="570" width="353" height="35"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="tintColor" systemColor="systemGreenColor"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="filled" title="Get">
+                                    <color key="baseBackgroundColor" systemColor="systemBlueColor"/>
+                                </buttonConfiguration>
+                                <connections>
+                                    <action selector="getProposals" destination="1jy-hg-cmU" eventType="touchUpInside" id="p2c-LF-OUt"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="fiT-N3-eEb"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -1653,7 +1689,6 @@
                                 </buttonConfiguration>
                                 <connections>
                                     <action selector="loginPressed:" destination="xqD-YT-SSM" eventType="touchUpInside" id="xvO-fG-NrW"/>
-                                    <segue destination="BYZ-38-t0r" kind="show" identifier="Login" id="Ice-c7-qmj"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="TAA-mm-Aft">
@@ -1682,6 +1717,7 @@
                     <connections>
                         <outlet property="emailTextfield" destination="Vda-Mr-5fR" id="sXo-RK-SR8"/>
                         <outlet property="passwordTextfield" destination="LdD-cI-N4Q" id="0m2-MD-Il1"/>
+                        <segue destination="BYZ-38-t0r" kind="show" identifier="Login" id="56f-O1-BAl"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="R8m-eg-TiC" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -1718,7 +1754,6 @@
                                 </buttonConfiguration>
                                 <connections>
                                     <action selector="createAccountPressed:" destination="wT8-cC-7Rm" eventType="touchUpInside" id="xdQ-ay-iMl"/>
-                                    <segue destination="TOw-Dn-2ML" kind="show" identifier="Create Account" id="gdX-vs-uz9"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -1729,6 +1764,7 @@
                     <connections>
                         <outlet property="emailTextfield" destination="830-fP-ndn" id="XrM-AH-PTI"/>
                         <outlet property="passwordTextfield" destination="N2f-90-IEu" id="Uig-Yj-ely"/>
+                        <segue destination="TOw-Dn-2ML" kind="show" identifier="Create Account" id="rqF-CU-fGt"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="tM1-tn-IEd" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -1824,7 +1860,7 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="n0d-g7-kW2"/>
+        <segue reference="56f-O1-BAl"/>
     </inferredMetricsTieBreakers>
     <resources>
         <image name="car" catalog="system" width="128" height="95"/>
@@ -1837,6 +1873,9 @@
         </namedColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemBlueColor">
+            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGreenColor">
             <color red="0.20392156862745098" green="0.7803921568627451" blue="0.34901960784313724" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

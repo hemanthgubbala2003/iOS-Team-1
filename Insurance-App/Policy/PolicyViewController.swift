@@ -139,19 +139,82 @@ class PolicyViewController: UIViewController, UIPickerViewDelegate, UIPickerView
     @objc func dismissFunc(){
         view.endEditing(true)
     }
+    
+    @IBAction func getDetails(){
+        
+        let url = URL(string: "\(Constants.policyAPI)/api/Policy")! // Replace with your API URL
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("Bearer \(Constants.bearerToken)", forHTTPHeaderField: "Authorization")
+        
+        print("Completed setting the Request")
+
+        //Perform the API Request
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("Error: \(error.localizedDescription)")
+                return
+            }
+            
+            guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
+                print("Server error")
+                print("\(String(describing: response))")
+                if let data = data {
+                    do {
+                        let jsonResponse = try JSONSerialization.jsonObject(with: data, options: [])
+                        print("Response: \(jsonResponse)")
+                    } catch {
+                        print("Failed to decode response: \(error.localizedDescription)")
+                    }
+                }
+                return
+            }
+            print("Getting the Response")
+            if let data = data {
+                do {
+                    
+                    if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [[String: Any]] {
+                        
+                        
+                        
+                         for policy in jsonResponse{
+                            if let policyID = policy["policyNo"] as? String {
+                                print(policyID)
+                                DispatchQueue.main.async{
+                                    if policyID.trimmingCharacters(in: .whitespacesAndNewlines) == self.policyNumberInput.text! {
+                                        print("Found \(policyID) == \(self.policyNumberInput.text!)")
+                                        self.proposalNumberInput.text = policy["proposalNo"] as? String
+                                        self.noClaimBonusInput.text = "\(policy["noClaimBonus"] as! Double)"
+                                        self.receiptNumberInput.text = policy["receiptNo"] as? String
+                                        self.receiptDateInput.text = policy["receiptDate"] as? String
+                                        self.paymentOptionsInput.text = policy["paymentMode"] as? String
+                                        self.amountInput.text = "\(policy["amount"] as! Int)"
+                                        
+                                    }
+
+                                }
+                                
+                            }
+                            else {
+                                    print("proposalID not found for proposal: \(policy)")
+                                }
+                            
+                       }
+
+                    }
+                } catch {
+                    print("Failed to decode response: \(error.localizedDescription)")
+                }
+            }
+        }
+        task.resume()
+
+
+    }
     @IBAction func postDetails(){
-        
-        // Prepare the Data
-        
-        let policy = Policy(
-            policyNo: policyNumberInput.text!,
-            proposalNo: proposalNumberInput.text!,
-            noClaimBonus: Int(noClaimBonusInput.text!)!,
-            receiptNo: receiptNumberInput.text!,
-            receiptDate: receiptDateInput.text!,
-            paymentMode: paymentOptionsInput.text!,
-            amount: Int(amountInput.text!)!
-        )
+                
+        let policy = validateFields()
 
         // Encode Request Body into JSON
         guard let jsonData = try? JSONEncoder().encode(policy) else {
@@ -182,7 +245,8 @@ class PolicyViewController: UIViewController, UIPickerViewDelegate, UIPickerView
             
             guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
                 print("Server error")
-                print("\(response)")
+                self.showAlert(title: "Server Error ", message: "Details not saved")
+                print("\(String(describing: response))")
                 if let data = data {
                     do {
                         let jsonResponse = try JSONSerialization.jsonObject(with: data, options: [])
@@ -194,6 +258,7 @@ class PolicyViewController: UIViewController, UIPickerViewDelegate, UIPickerView
                 return
             }
             print("Getting the Response")
+            self.showAlert(title: "Success ", message: "Details saved")
             
             if let data = data {
                 do {
@@ -267,17 +332,8 @@ class PolicyViewController: UIViewController, UIPickerViewDelegate, UIPickerView
     }
     
     @IBAction func putDetails(){
-        // Prepare the Data
-        
-        let policy = Policy(
-            policyNo: policyNumberInput.text!,
-            proposalNo: proposalNumberInput.text!,
-            noClaimBonus: Int(noClaimBonusInput.text!)!,
-            receiptNo: receiptNumberInput.text!,
-            receiptDate: receiptDateInput.text!,
-            paymentMode: paymentOptionsInput.text!,
-            amount: Int(amountInput.text!)!
-        )
+
+        let policy = validateFields()
 
         // Encode Request Body into JSON
         guard let jsonData = try? JSONEncoder().encode(policy) else {
@@ -308,6 +364,7 @@ class PolicyViewController: UIViewController, UIPickerViewDelegate, UIPickerView
             
             guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
                 print("Server error")
+                self.showAlert(title: "Error ", message: "Details not updated")
                 print("\(response)")
                 if let data = data {
                     do {
@@ -321,11 +378,11 @@ class PolicyViewController: UIViewController, UIPickerViewDelegate, UIPickerView
             }
             print("Getting the Response")
             
+            self.showAlert(title: "Success ", message: "Details updated")
             if let data = data {
                 do {
                     let jsonResponse = try JSONSerialization.jsonObject(with: data, options: [])
                     print("Response: \(jsonResponse)")
-                    
                 } catch {
                     print("Failed to decode response: \(error.localizedDescription)")
                 }
@@ -338,15 +395,7 @@ class PolicyViewController: UIViewController, UIPickerViewDelegate, UIPickerView
 
     @IBAction func deleteDetails(){
         
-        let policy = Policy(
-            policyNo: policyNumberInput.text!,
-            proposalNo: proposalNumberInput.text!,
-            noClaimBonus: Int(noClaimBonusInput.text!)!,
-            receiptNo: receiptNumberInput.text!,
-            receiptDate: receiptDateInput.text!,
-            paymentMode: paymentOptionsInput.text!,
-            amount: Int(amountInput.text!)!
-        )
+        let policy = validateFields()
 
         // Encode Request Body into JSON
         guard let jsonData = try? JSONEncoder().encode(policy) else {
@@ -378,6 +427,7 @@ class PolicyViewController: UIViewController, UIPickerViewDelegate, UIPickerView
             
             guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
                 print("Server error")
+                self.showAlert(title: "Error", message: "Details not deleted")
                 print("\(response)")
                 if let data = data {
                     do {
@@ -390,6 +440,7 @@ class PolicyViewController: UIViewController, UIPickerViewDelegate, UIPickerView
                 return
             }
             print("Getting the Response")
+            self.showAlert(title: "Success", message: "Details deleted")
             
             if let data = data {
                 do {
@@ -405,5 +456,66 @@ class PolicyViewController: UIViewController, UIPickerViewDelegate, UIPickerView
 
 
     }
+    
+    func showAlert(title: String, message: String) {
+        DispatchQueue.main.async {
+            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            self.present(alert, animated: true, completion: nil)
+        }
+    }
+    
+    func validateFields() -> Policy? {
+        // Check if text fields are filled and valid
+        guard let policyNo = policyNumberInput.text, !policyNo.isEmpty else {
+            showAlert(title: "Validation Error", message: "Policy number is required.")
+            return nil
+        }
+        
+        guard let proposalNo = proposalNumberInput.text, !proposalNo.isEmpty else {
+            showAlert(title: "Validation Error", message: "Proposal number is required.")
+            return nil
+        }
+        
+        guard let noClaimBonusText = noClaimBonusInput.text, let noClaimBonus = Int(noClaimBonusText) else {
+            showAlert(title: "Validation Error", message: "Claim bonus must be a valid number.")
+            return nil
+        }
+        
+        guard let receiptNo = receiptNumberInput.text, !receiptNo.isEmpty else {
+            showAlert(title: "Validation Error", message: "Receipt number is required.")
+            return nil
+        }
+        
+        guard let receiptDate = receiptDateInput.text, !receiptDate.isEmpty else {
+            showAlert(title: "Validation Error", message: "Receipt date is required.")
+            return nil
+        }
+        
+        guard let paymentMode = paymentOptionsInput.text, !paymentMode.isEmpty else {
+            showAlert(title: "Validation Error", message: "Payment mode is required.")
+            return nil
+        }
+        
+        guard let amountText = amountInput.text, let amount = Int(amountText) else {
+            showAlert(title: "Validation Error", message: "Amount must be a valid number.")
+            return nil
+        }
+        
+        // Return Policy object if all validations pass
+        return Policy(policyNo: policyNo, proposalNo: proposalNo, noClaimBonus: noClaimBonus, receiptNo: receiptNo, receiptDate: receiptDate, paymentMode: paymentMode, amount: amount)
+    }
 
 }
+
+// Prepare the Data
+
+//        let policy = Policy(
+//            policyNo: policyNumberInput.text!,
+//            proposalNo: proposalNumberInput.text!,
+//            noClaimBonus: Int(noClaimBonusInput.text!)!,
+//            receiptNo: receiptNumberInput.text!,
+//            receiptDate: receiptDateInput.text!,
+//            paymentMode: paymentOptionsInput.text!,
+//            amount: Int(amountInput.text!)!
+//        )

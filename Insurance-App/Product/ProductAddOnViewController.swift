@@ -151,7 +151,74 @@ class ProductAddonViewController: UIViewController, UIPickerViewDelegate, UIPick
         }
         task.resume()
     }
+    @IBAction func getDetails(){
 
+        //Create the URL Request
+        let url = URL(string: "\(Constants.productAPI)/api/ProductAddOn")! // Replace with your API URL
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("Bearer \(Constants.bearerToken)", forHTTPHeaderField: "Authorization")
+        
+        //Perform the API Request
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("Error: \(error.localizedDescription)")
+                return
+            }
+            
+            guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
+                print("Server error")
+                if let data = data {
+                    do {
+                        let jsonResponse = try JSONSerialization.jsonObject(with: data, options: [])
+                        print("Response: \(jsonResponse)")
+
+                    } catch {
+                        print("Failed to decode response: \(error.localizedDescription)")
+                    }
+                }
+                return
+            }
+
+            if let data = data {
+                do {
+                    
+                    if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [[String: Any]] {
+                        
+                        
+                        
+                         for productAddOn in jsonResponse{
+                            if let addOnID = productAddOn["addonID"] as? String {
+                                print(addOnID)
+                                DispatchQueue.main.async{
+                                    if addOnID.trimmingCharacters(in: .whitespacesAndNewlines) == self.addOnInput.text! {
+                                        print("Found \(addOnID) == \(self.addOnInput.text!)")
+                                        self.productIdInput.text = productAddOn["productID"] as? String
+                                        self.addOnTitleInput.text = productAddOn["addonTitle"] as? String
+                                        self.addOnDescriptionInput.text = productAddOn["addonDescription"] as? String
+                                        
+                                    }
+
+                                }
+                                
+                            }
+                            else {
+                                    print("proposalID not found for proposal: \(productAddOn)")
+                                }
+                            
+                       }
+
+                    }
+                } catch {
+                    print("Failed to decode response: \(error.localizedDescription)")
+                }
+            }
+        }
+        task.resume()
+
+        
+    }
     @IBAction func postDetails(){
         let productAddon = ProductAddon(
             productID: productIdInput.text!,
@@ -188,10 +255,12 @@ class ProductAddonViewController: UIViewController, UIPickerViewDelegate, UIPick
             
             guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
                 print("Server error")
+                self.showAlert(title: "Server Error ", message: "Details not saved")
                 if let data = data {
                     do {
                         let jsonResponse = try JSONSerialization.jsonObject(with: data, options: [])
                         print("Response: \(jsonResponse)")
+
                     } catch {
                         print("Failed to decode response: \(error.localizedDescription)")
                     }
@@ -199,6 +268,7 @@ class ProductAddonViewController: UIViewController, UIPickerViewDelegate, UIPick
                 return
             }
             print("Getting the Response")
+            self.showAlert(title: "Success", message: "Details saved")
             
             if let data = data {
                 do {
@@ -252,6 +322,7 @@ class ProductAddonViewController: UIViewController, UIPickerViewDelegate, UIPick
                 
                 guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
                     print("Server error")
+                    self.showAlert(title: "Error", message: "Details not updated")
                     if let data = data {
                         do {
                             let jsonResponse = try JSONSerialization.jsonObject(with: data, options: [])
@@ -263,7 +334,7 @@ class ProductAddonViewController: UIViewController, UIPickerViewDelegate, UIPick
                     return
                 }
                 print("Getting the Response")
-                
+                self.showAlert(title: "Success", message: "Details updated")
                 if let data = data {
                     do {
                         let jsonResponse = try JSONSerialization.jsonObject(with: data, options: [])
@@ -313,6 +384,7 @@ class ProductAddonViewController: UIViewController, UIPickerViewDelegate, UIPick
             }
             
             guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
+                self.showAlert(title: "Error", message: "Details not deleted")
                 print("Server error")
                 if let data = data {
                     do {
@@ -325,7 +397,7 @@ class ProductAddonViewController: UIViewController, UIPickerViewDelegate, UIPick
                 return
             }
             print("Getting the Response")
-            
+            self.showAlert(title: "Success", message: "Details deleted")
             if let data = data {
                 do {
                     let jsonResponse = try JSONSerialization.jsonObject(with: data, options: [])
@@ -339,4 +411,11 @@ class ProductAddonViewController: UIViewController, UIPickerViewDelegate, UIPick
 
     }
 
+    func showAlert(title: String, message: String) {
+        DispatchQueue.main.async {
+            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            self.present(alert, animated: true, completion: nil)
+        }
+    }
 }
