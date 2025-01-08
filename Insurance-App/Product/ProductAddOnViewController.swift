@@ -204,7 +204,7 @@ class ProductAddonViewController: UIViewController, UIPickerViewDelegate, UIPick
                                 
                             }
                             else {
-                                    print("proposalID not found for proposal: \(productAddOn)")
+                                    print("productAddOnID not found for proposal: \(productAddOn)")
                                 }
                             
                        }
@@ -220,12 +220,14 @@ class ProductAddonViewController: UIViewController, UIPickerViewDelegate, UIPick
         
     }
     @IBAction func postDetails(){
-        let productAddon = ProductAddon(
-            productID: productIdInput.text!,
-            addonID: addOnInput.text!,
-            addonTitle: addOnTitleInput.text!,
-            addonDescription: addOnDescriptionInput.text!
-        )
+//        let productAddon = ProductAddon(
+//            productID: productIdInput.text!,
+//            addonID: addOnInput.text!,
+//            addonTitle: addOnTitleInput.text!,
+//            addonDescription: addOnDescriptionInput.text!
+//        )
+            
+        let productAddon = validateFields()
         
         // Encode Request Body into JSON
         guard let jsonData = try? JSONEncoder().encode(productAddon) else {
@@ -286,13 +288,8 @@ class ProductAddonViewController: UIViewController, UIPickerViewDelegate, UIPick
 
     @IBAction func putDetails(){
         
-            let productAddon = ProductAddon(
-                productID: productIdInput.text!,
-                addonID: addOnInput.text!,
-                addonTitle: addOnTitleInput.text!,
-                addonDescription: addOnDescriptionInput.text!
-            )
-            
+            let productAddon = validateFields()
+
             // Encode Request Body into JSON
             guard let jsonData = try? JSONEncoder().encode(productAddon) else {
                 print("Failed to encode request body")
@@ -349,15 +346,11 @@ class ProductAddonViewController: UIViewController, UIPickerViewDelegate, UIPick
     }
 
     @IBAction func deleteDetails(){
-        let productAddon = ProductAddon(
-            productID: productIdInput.text!,
-            addonID: addOnInput.text!,
-            addonTitle: addOnTitleInput.text!,
-            addonDescription: addOnDescriptionInput.text!
-        )
-        
+
+        let addonID = validateFields()
+
         // Encode Request Body into JSON
-        guard let jsonData = try? JSONEncoder().encode(productAddon) else {
+        guard let jsonData = try? JSONEncoder().encode(addonID) else {
             print("Failed to encode request body")
             return
         }
@@ -409,6 +402,31 @@ class ProductAddonViewController: UIViewController, UIPickerViewDelegate, UIPick
         }
         task.resume()
 
+    }
+    func validateFields() -> ProductAddon? {
+        // Check if text fields are filled and valid
+        guard let productID = productIdInput.text, !productID.isEmpty else {
+            showAlert(title: "Validation Error", message: "Product ID is required.")
+            return nil
+        }
+        
+        guard let addonID = addOnInput.text, !addonID.isEmpty else {
+            showAlert(title: "Validation Error", message: "Add On ID is required.")
+            return nil
+        }
+        
+        guard let addonTitle = addOnTitleInput.text, !addonTitle.isEmpty else {
+            showAlert(title: "Validation Error", message: "Add On Title is required.")
+            return nil
+        }
+        
+        guard let addonDescription = addOnDescriptionInput.text, !addonDescription.isEmpty else {
+            showAlert(title: "Validation Error", message: "Add On Description is required.")
+            return nil
+        }
+
+        // Return Policy object if all validations pass
+        return ProductAddon(productID: productID, addonID: addonID, addonTitle: addonTitle, addonDescription: addonDescription)
     }
 
     func showAlert(title: String, message: String) {

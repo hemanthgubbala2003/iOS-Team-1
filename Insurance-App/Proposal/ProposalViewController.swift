@@ -196,6 +196,11 @@ class ProposalViewController: UIViewController, UIPickerViewDelegate, UIPickerVi
     
     @IBAction func getProposals(){
         
+        guard let proposalNo = proposalIdInput.text, !proposalNo.isEmpty else {
+            showAlert(title: "Validation Error", message: "Proposal number is required.")
+            return
+        }
+        
         //Create the URL Request
         let url = URL(string: "\(Constants.proposalAPI)/api/Proposal")! // Replace with your API URL
         var request = URLRequest(url: url)
